@@ -17,6 +17,8 @@ def compute_distance_matrix(descriptors1, descriptors2, norm="L2"):
     assert norm in ["hamming", "L2"]
 
     if norm == "hamming":
+        "# *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****"
+
         # Convert to binary [N.256]
         binary_descriptors1 = np.unpackbits(descriptors1, axis=1)
         binary_descriptors2 = np.unpackbits(descriptors2, axis=1)
@@ -25,10 +27,14 @@ def compute_distance_matrix(descriptors1, descriptors2, norm="L2"):
             binary_descriptors1[:, None, :] != binary_descriptors2[None, :, :], axis=-1
         )
 
+        "# *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****"
+
     else:
+        "# *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****"
         distances = np.linalg.norm(
             descriptors1[:, None, :] - descriptors2[None, :, ...], axis=-1
         )
+        "# *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****"
 
     return distances
 
@@ -36,6 +42,7 @@ def compute_distance_matrix(descriptors1, descriptors2, norm="L2"):
 def cycle_consistency_match(descriptors1, descriptors2, norm="L2"):
     """
     Brute-force descriptor match with cross consistency check.
+    Sort matches in ascending order of their distances so that best matches (with low distance) come to front.
 
 
     Inputs:
@@ -47,6 +54,8 @@ def cycle_consistency_match(descriptors1, descriptors2, norm="L2"):
       where matches[:, 0] denote the indices in the first and
       matches[:, 1] the indices in the second set of descriptors.
     """
+
+    "# *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****"
 
     # Compute distances
     # distances: [N1,N2]
@@ -69,12 +78,15 @@ def cycle_consistency_match(descriptors1, descriptors2, norm="L2"):
         (matched_indice1[sorted_indices], macthed_indice2[sorted_indices]), axis=1
     )
 
+    "# *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****"
+
     return matches
 
 
 def lowe_match(descriptors1, descriptors2, threshold=0, ratio=0.5, norm="L2"):
     """
-    Brute-force descriptor match with Lowe tests
+    Brute-force descriptor match with Lowe tests. 
+    Sort matches in ascending order of their distances so that best matches (with low distance) come to front.
 
 
     Inputs:
@@ -88,7 +100,7 @@ def lowe_match(descriptors1, descriptors2, threshold=0, ratio=0.5, norm="L2"):
       where matches[:, 0] denote the indices in the first and
       matches[:, 1] the indices in the second set of descriptors.
     """
-
+    "# *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****"
     # Compute distances
     distances = compute_distance_matrix(descriptors1, descriptors2, norm=norm)
     # [N1,]
@@ -99,7 +111,6 @@ def lowe_match(descriptors1, descriptors2, threshold=0, ratio=0.5, norm="L2"):
     # Lowe tests
     # dist_best: [N1,], dist_second_best:[N1,]
     dist_best = distances[indices1, indices2[:, 0]]
-    print(dist_best.max())
     dist_second_best = distances[indices1, indices2[:, 1]]
     dist_ratio = dist_best / dist_second_best
     mask = (dist_best < threshold) & (dist_ratio < ratio)
@@ -111,5 +122,6 @@ def lowe_match(descriptors1, descriptors2, threshold=0, ratio=0.5, norm="L2"):
     sorted_indices = dist.argsort()
 
     matches = np.stack((indices1[sorted_indices], indices2[sorted_indices]), axis=1)
+    "# *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****"
 
     return matches
